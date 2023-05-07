@@ -237,15 +237,15 @@ void Maze::clearArea()
 
 int** Maze::twoDimArr(int x, int y)
 {
-    int** vysledek;
-    vysledek = new int * [x];
+    int** result;
+    result = new int * [x];
 
     for (int i = 0; i < x; i++)
     {
-        vysledek[i] = new int[y];
+        result[i] = new int[y];
     }
 
-    return vysledek;
+    return result;
 }
 
 void Maze::loadMap()
@@ -282,21 +282,21 @@ void Maze::writeResulttoFile()
         return;
     }
     
-    string zapisovaciSoubor = this->readFile;
-    zapisovaciSoubor.insert(zapisovaciSoubor.length() - 4, "-path");
+    string writeFile = this->readFile;
+    writeFile.insert(writeFile.length() - 4, "-path");
 
-    ofstream zapis;
-    zapis.open(zapisovaciSoubor);
-    zapis << this->height << "\n";
-    zapis << this->width << "\n";
+    ofstream output;
+    output.open(writeFile);
+    output << this->height << "\n";
+    output << this->width << "\n";
     for (int i = 0; i < this->height; i++)
     {
         for (int j = 0; j < this->width; j++)
         {
-            zapis << area[i][j];
+            output << area[i][j];
         }
-        zapis << "\n";
+        output << "\n";
     }
 
-    zapis.close();
+    output.close();
 }
