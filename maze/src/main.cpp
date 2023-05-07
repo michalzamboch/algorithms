@@ -5,12 +5,12 @@ using namespace std;
 
 int main()
 {
-	Maze maze("mapa.txt");
+	Maze maze("map.txt");
 
-	maze.nactiMapu();
-	maze.najdiCestu();
-	maze.vykresli();
-	maze.vysledekDoSouboru();
+	maze.loadMap();
+	maze.findPath();
+	maze.draw();
+	maze.writeResulttoFile();
 
 	return 0;
 }

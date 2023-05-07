@@ -5,50 +5,50 @@ using namespace std;
 
 Maze::Maze(string soubor)
 {
-    this->cteciSoubor = soubor;
+    this->readFile = soubor;
     string line;
-    ifstream mapaSoubor(this->cteciSoubor);
+    ifstream mapFile(this->readFile);
 
-    mapaSoubor >> line;
-    this->vyska = std::stoi(line);
+    mapFile >> line;
+    this->height = std::stoi(line);
     
-    mapaSoubor >> line;
-    this->sirka = std::stoi(line);
-    mapaSoubor.close();
+    mapFile >> line;
+    this->width = std::stoi(line);
+    mapFile.close();
 
-    this->plocha = this->twoDimArr(this->vyska, this->sirka);
+    this->area = this->twoDimArr(this->height, this->width);
 
-    this->cil = new int[2];
+    this->finish = new int[2];
 
     this->start = new int[2];
 
-    zapisovatCestu = true;
+    canWritePath = true;
 }
 
 Maze::~Maze()
 {
-    this->cesta.clear();
+    this->path.clear();
 
-    delete[] this->cil;
-    this->cil = nullptr;
+    delete[] this->finish;
+    this->finish = nullptr;
 
     delete[] this->start;
     this->start = nullptr;
 
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        delete[] this->plocha[i];
+        delete[] this->area[i];
     }
-    delete[] this->plocha;
+    delete[] this->area;
 }
 
-void Maze::vykresli()
+void Maze::draw()
 {
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            switch (plocha[i][j])
+            switch (area[i][j])
             {
             case PATH: cout << STR_PATH;
                 break;
@@ -70,62 +70,62 @@ void Maze::vykresli()
     }
 }
 
-void Maze::najdiCestu()
+void Maze::findPath()
 {
-    this->zapisovatCestu = true;
-    this->cesta.clear();
-    this->najdiStart();
-    this->najdiCil();
-    this->vycistiPlochu();
+    this->canWritePath = true;
+    this->path.clear();
+    this->findStart();
+    this->findFinish();
+    this->clearArea();
 
-    vnitrniPruchod(this->start[0], this->start[1]);
+    innerPassage(this->start[0], this->start[1]);
     
-    this->vycistiPlochu();
-    this->zapisFinalniCestu();
+    this->clearArea();
+    this->writeFinalPath();
 }
 
-void Maze::vnitrniPruchod(int x, int y)
+void Maze::innerPassage(int x, int y)
 {
-    this->nastaveniSmeru(x, y + 1);
-    this->nastaveniSmeru(x, y - 1);
-    this->nastaveniSmeru(x + 1, y);
-    this->nastaveniSmeru(x - 1, y);
+    this->directorionSet(x, y + 1);
+    this->directorionSet(x, y - 1);
+    this->directorionSet(x + 1, y);
+    this->directorionSet(x - 1, y);
 }
 
-void Maze::nastaveniSmeru(int x, int y)
+void Maze::directorionSet(int x, int y)
 {
-    if (this->jeVCili(x, y) == true)
+    if (this->isInFinish(x, y) == true)
     {
-        this->zapisovatCestu = false;
+        this->canWritePath = false;
     }
 
-    if (this->muzuVstoupit(x, y) == true)
+    if (this->canEnter(x, y) == true)
     {
-        this->dalsiKrok(x, y);
+        this->nextStep(x, y);
     }
 }
 
-void Maze::dalsiKrok(int x, int y)
+void Maze::nextStep(int x, int y)
 {
-    this->zapisCestu(x, y);
-    this->plocha[x][y] = TEMP_PATH;
-    this->vnitrniPruchod(x, y);
-    this->blokujCestu(x, y);
-    this->uvolniCestu();
+    this->writePath(x, y);
+    this->area[x][y] = TEMP_PATH;
+    this->innerPassage(x, y);
+    this->blockPath(x, y);
+    this->releasePath();
 }
 
-bool Maze::muzuVstoupit(int x, int y)
+bool Maze::canEnter(int x, int y)
 {
-    if ((x < 0) || (x >= this->sirka))
-    {
-        return false;
-    }
-    if ((y < 0) || (y >= this->vyska))
+    if ((x < 0) || (x >= this->width))
     {
         return false;
     }
+    if ((y < 0) || (y >= this->height))
+    {
+        return false;
+    }
 
-    if (plocha[x][y] == PATH)
+    if (area[x][y] == PATH)
     {
         return true;
     }
@@ -133,9 +133,9 @@ bool Maze::muzuVstoupit(int x, int y)
     return false;
 }
 
-bool Maze::jeVCili(int x, int y)
+bool Maze::isInFinish(int x, int y)
 {
-    if ((x == this->cil[0]) && (y == this->cil[1]))
+    if ((x == this->finish[0]) && (y == this->finish[1]))
     {
         return true;
     }
@@ -145,47 +145,47 @@ bool Maze::jeVCili(int x, int y)
     }
 }
 
-void Maze::blokujCestu(int x, int y)
+void Maze::blockPath(int x, int y)
 {
-    if (this->plocha[x][y] != FINAL_PATH && this->plocha[x][y] != START
-        && this->plocha[x][y] != WALL && this->plocha[x][y] != FINISH)
+    if (this->area[x][y] != FINAL_PATH && this->area[x][y] != START
+        && this->area[x][y] != WALL && this->area[x][y] != FINISH)
     {
-        this->plocha[x][y] = BLOCK;
+        this->area[x][y] = BLOCK;
     }
 }
 
-void Maze::zapisCestu(int x, int y)
+void Maze::writePath(int x, int y)
 {
-    if (this->zapisovatCestu == true)
+    if (this->canWritePath == true)
     {
         array<int, 2>tmp{x, y};
-        this->cesta.push_back(tmp);
+        this->path.push_back(tmp);
     }
 }
 
-void Maze::uvolniCestu()
+void Maze::releasePath()
 {
-    if (this->zapisovatCestu == true)
+    if (this->canWritePath == true)
     {
-        this->cesta.pop_back();
+        this->path.pop_back();
     }
 }
 
-void Maze::zapisFinalniCestu()
+void Maze::writeFinalPath()
 {
-    for (unsigned int i = 0; i < this->cesta.size(); i++)
+    for (unsigned int i = 0; i < this->path.size(); i++)
     {
-        this->plocha[this->cesta.at(i)[0]][this->cesta.at(i)[1]] = FINAL_PATH;
+        this->area[this->path.at(i)[0]][this->path.at(i)[1]] = FINAL_PATH;
     }
 }
 
-void Maze::najdiStart()
+void Maze::findStart()
 {
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            if (plocha[i][j] == START)
+            if (area[i][j] == START)
             {
                 this->start[0] = i;
                 this->start[1] = j;
@@ -194,42 +194,42 @@ void Maze::najdiStart()
     }
 }
 
-void Maze::vypisMaze()
+void Maze::writeOut()
 {
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            cout << plocha[i][j];
+            cout << area[i][j];
         }
         cout << endl;
     }
 }
 
-void Maze::najdiCil()
+void Maze::findFinish()
 {
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            if (plocha[i][j] == FINISH)
+            if (area[i][j] == FINISH)
             {
-                this->cil[0] = i;
-                this->cil[1] = j;
+                this->finish[0] = i;
+                this->finish[1] = j;
             }
         }
     }
 }
 
-void Maze::vycistiPlochu()
+void Maze::clearArea()
 {
-    for (int i = 0; i < this->vyska; i++)
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            if (plocha[i][j] != FINISH && plocha[i][j] != START && plocha[i][j] != WALL)
+            if (area[i][j] != FINISH && area[i][j] != START && area[i][j] != WALL)
             {
-                plocha[i][j] = PATH;
+                area[i][j] = PATH;
             }
         }
     }
@@ -248,52 +248,52 @@ int** Maze::twoDimArr(int x, int y)
     return vysledek;
 }
 
-void Maze::nactiMapu()
+void Maze::loadMap()
 {
     string line;
-    ifstream mapaSoubor(this->cteciSoubor);
-    mapaSoubor >> line;
-    mapaSoubor >> line;
+    ifstream mapFile(this->readFile);
+    mapFile >> line;
+    mapFile >> line;
 
     int i = 0;
-    while (mapaSoubor >> line)
+    while (mapFile >> line)
     {
-        if (line.length() == this->sirka)
+        if (line.length() == this->width)
         {
             int j = 0;
             for (const auto &c : line)
             {
-                this->plocha[i][j] = c - '0';
+                this->area[i][j] = c - '0';
                 j++;
             }
         }
         i++;
     }
 
-    mapaSoubor.close();
+    mapFile.close();
 }
 
-void Maze::vysledekDoSouboru()
+void Maze::writeResulttoFile()
 {
-    if (this->cesta.size() == 0)
+    if (this->path.size() == 0)
     {
-        cout << "Cesta nejde zapsat do souboru." << endl;
-        cout << "Musite nejprve cestu najit." << endl;
+        cout << "Path can not be written to file." << endl;
+        cout << "Path have not been found yet." << endl;
         return;
     }
     
-    string zapisovaciSoubor = this->cteciSoubor;
-    zapisovaciSoubor.insert(zapisovaciSoubor.length() - 4, "-vysledna_cesta");
+    string zapisovaciSoubor = this->readFile;
+    zapisovaciSoubor.insert(zapisovaciSoubor.length() - 4, "-path");
 
     ofstream zapis;
     zapis.open(zapisovaciSoubor);
-    zapis << this->vyska << "\n";
-    zapis << this->sirka << "\n";
-    for (int i = 0; i < this->vyska; i++)
+    zapis << this->height << "\n";
+    zapis << this->width << "\n";
+    for (int i = 0; i < this->height; i++)
     {
-        for (int j = 0; j < this->sirka; j++)
+        for (int j = 0; j < this->width; j++)
         {
-            zapis << plocha[i][j];
+            zapis << area[i][j];
         }
         zapis << "\n";
     }

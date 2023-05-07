@@ -4,40 +4,40 @@
 class Maze
 {
 private:
-	int** plocha = nullptr;
+	int** area = nullptr;
 	int* start = nullptr;
-	int* cil = nullptr;
-	int vyska = 0;
-	int sirka = 0;
-	bool zapisovatCestu;
-	std::string cteciSoubor;
-	std::vector<std::array<int, 2>>cesta;
+	int* finish = nullptr;
+	int height = 0;
+	int width = 0;
+	bool canWritePath;
+	std::string readFile;
+	std::vector<std::array<int, 2>>path;
 
 	int** twoDimArr(int x, int y);
-	void najdiStart();
-	void najdiCil();
-	void vycistiPlochu();
-	void vnitrniPruchod(int x, int y);
-	void dalsiKrok(int x, int y);
-	void nastaveniSmeru(int x, int y);
+	void findStart();
+	void findFinish();
+	void clearArea();
+	void innerPassage(int x, int y);
+	void nextStep(int x, int y);
+	void directorionSet(int x, int y);
 	
-	bool muzuVstoupit(int x, int y);
-	bool jeVCili(int x, int y);
+	bool canEnter(int x, int y);
+	bool isInFinish(int x, int y);
 
-	void blokujCestu(int x, int y);
-	void zapisCestu(int x, int y);
-	void uvolniCestu();
+	void blockPath(int x, int y);
+	void writePath(int x, int y);
+	void releasePath();
 
-	void zapisFinalniCestu();
+	void writeFinalPath();
 
 public:
 	Maze(std::string soubor);
 	~Maze();
 
-	void vypisMaze();
+	void writeOut();
 
-	void vykresli();
-	void najdiCestu();
-	void nactiMapu();
-	void vysledekDoSouboru();
+	void draw();
+	void findPath();
+	void loadMap();
+	void writeResulttoFile();
 };
