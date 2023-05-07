@@ -9,10 +9,11 @@ Bludiste::Bludiste(string soubor)
     string radek;
     ifstream mapaSoubor(this->cteciSoubor);
 
-    getline(mapaSoubor, radek);
-    this->vyska = 31;
-    getline(mapaSoubor, radek);
-    this->sirka = 31;
+    mapaSoubor >> radek;
+    this->vyska = std::stoi(radek);
+    
+    mapaSoubor >> radek;
+    this->sirka = std::stoi(radek);
     mapaSoubor.close();
 
     this->plocha = this->twoDimArr(this->vyska, this->sirka);
@@ -40,8 +41,6 @@ Bludiste::~Bludiste()
     }
     delete[] this->plocha;
 }
-
-/**************************************************************/
 
 void Bludiste::vykresli()
 {
@@ -87,10 +86,10 @@ void Bludiste::najdiCestu()
 
 void Bludiste::vnitrniPruchod(int x, int y)
 {
-    this->nastaveniSmeru(x, y + 1);     // sever
-    this->nastaveniSmeru(x, y - 1);     // jih
-    this->nastaveniSmeru(x + 1, y);     // vychod
-    this->nastaveniSmeru(x - 1, y);     // zapad
+    this->nastaveniSmeru(x, y + 1);
+    this->nastaveniSmeru(x, y - 1);
+    this->nastaveniSmeru(x + 1, y);
+    this->nastaveniSmeru(x - 1, y);
 }
 
 void Bludiste::nastaveniSmeru(int x, int y)
