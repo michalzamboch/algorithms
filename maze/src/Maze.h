@@ -1,7 +1,7 @@
 #pragma once
-#include "Knihovny.h"
+#include "libs.h"
 
-class Bludiste
+class Maze
 {
 private:
 	int** plocha = nullptr;
@@ -10,8 +10,8 @@ private:
 	int vyska = 0;
 	int sirka = 0;
 	bool zapisovatCestu;
-	string cteciSoubor;
-	vector<array<int, 2>>cesta;
+	std::string cteciSoubor;
+	std::vector<std::array<int, 2>>cesta;
 
 	int** twoDimArr(int x, int y);
 	void najdiStart();
@@ -31,10 +31,10 @@ private:
 	void zapisFinalniCestu();
 
 public:
-	Bludiste(string soubor);
-	~Bludiste();
+	Maze(std::string soubor);
+	~Maze();
 
-	void vypisBludiste();
+	void vypisMaze();
 
 	void vykresli();
 	void najdiCestu();

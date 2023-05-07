@@ -1,19 +1,19 @@
-#include "Knihovny.h"
-#include "Bludiste.h"
+#include "libs.h"
+#include "Maze.h"
 
 using namespace std;
 
-Bludiste::Bludiste(string soubor)
+Maze::Maze(string soubor)
 {
     this->cteciSoubor = soubor;
-    string radek;
+    string line;
     ifstream mapaSoubor(this->cteciSoubor);
 
-    mapaSoubor >> radek;
-    this->vyska = std::stoi(radek);
+    mapaSoubor >> line;
+    this->vyska = std::stoi(line);
     
-    mapaSoubor >> radek;
-    this->sirka = std::stoi(radek);
+    mapaSoubor >> line;
+    this->sirka = std::stoi(line);
     mapaSoubor.close();
 
     this->plocha = this->twoDimArr(this->vyska, this->sirka);
@@ -25,7 +25,7 @@ Bludiste::Bludiste(string soubor)
     zapisovatCestu = true;
 }
 
-Bludiste::~Bludiste()
+Maze::~Maze()
 {
     this->cesta.clear();
 
@@ -42,7 +42,7 @@ Bludiste::~Bludiste()
     delete[] this->plocha;
 }
 
-void Bludiste::vykresli()
+void Maze::vykresli()
 {
     for (int i = 0; i < this->vyska; i++)
     {
@@ -50,19 +50,19 @@ void Bludiste::vykresli()
         {
             switch (plocha[i][j])
             {
-            case CESTA: cout << STR_CESTA;
+            case PATH: cout << STR_PATH;
                 break;
-            case ZED: cout << STR_ZED << STR_ZED;
+            case WALL: cout << STR_WALL << STR_WALL;
                 break;
             case START: cout << STR_START;
                 break;
-            case CIL: cout << STR_CIL;
+            case FINISH: cout << STR_FINISH;
                 break;
-            case TEMP_CESTA: cout << STR_TEMP_CESTA;
+            case TEMP_PATH: cout << STR_TEMP_PATH;
                 break;
-            case BLOK: cout << STR_BLOK;
+            case BLOCK: cout << STR_BLOCK;
                 break;
-            case FINALNI_CESTA: cout << STR_FINALNI_CESTA;
+            case FINAL_PATH: cout << STR_FINAL_PATH;
                 break;
             }
         }
@@ -70,7 +70,7 @@ void Bludiste::vykresli()
     }
 }
 
-void Bludiste::najdiCestu()
+void Maze::najdiCestu()
 {
     this->zapisovatCestu = true;
     this->cesta.clear();
@@ -84,7 +84,7 @@ void Bludiste::najdiCestu()
     this->zapisFinalniCestu();
 }
 
-void Bludiste::vnitrniPruchod(int x, int y)
+void Maze::vnitrniPruchod(int x, int y)
 {
     this->nastaveniSmeru(x, y + 1);
     this->nastaveniSmeru(x, y - 1);
@@ -92,7 +92,7 @@ void Bludiste::vnitrniPruchod(int x, int y)
     this->nastaveniSmeru(x - 1, y);
 }
 
-void Bludiste::nastaveniSmeru(int x, int y)
+void Maze::nastaveniSmeru(int x, int y)
 {
     if (this->jeVCili(x, y) == true)
     {
@@ -105,16 +105,16 @@ void Bludiste::nastaveniSmeru(int x, int y)
     }
 }
 
-void Bludiste::dalsiKrok(int x, int y)
+void Maze::dalsiKrok(int x, int y)
 {
     this->zapisCestu(x, y);
-    this->plocha[x][y] = TEMP_CESTA;
+    this->plocha[x][y] = TEMP_PATH;
     this->vnitrniPruchod(x, y);
     this->blokujCestu(x, y);
     this->uvolniCestu();
 }
 
-bool Bludiste::muzuVstoupit(int x, int y)
+bool Maze::muzuVstoupit(int x, int y)
 {
     if ((x < 0) || (x >= this->sirka))
     {
@@ -125,7 +125,7 @@ bool Bludiste::muzuVstoupit(int x, int y)
         return false;
     }
 
-    if (plocha[x][y] == CESTA)
+    if (plocha[x][y] == PATH)
     {
         return true;
     }
@@ -133,7 +133,7 @@ bool Bludiste::muzuVstoupit(int x, int y)
     return false;
 }
 
-bool Bludiste::jeVCili(int x, int y)
+bool Maze::jeVCili(int x, int y)
 {
     if ((x == this->cil[0]) && (y == this->cil[1]))
     {
@@ -145,16 +145,16 @@ bool Bludiste::jeVCili(int x, int y)
     }
 }
 
-void Bludiste::blokujCestu(int x, int y)
+void Maze::blokujCestu(int x, int y)
 {
-    if (this->plocha[x][y] != FINALNI_CESTA && this->plocha[x][y] != START
-        && this->plocha[x][y] != ZED && this->plocha[x][y] != CIL)
+    if (this->plocha[x][y] != FINAL_PATH && this->plocha[x][y] != START
+        && this->plocha[x][y] != WALL && this->plocha[x][y] != FINISH)
     {
-        this->plocha[x][y] = BLOK;
+        this->plocha[x][y] = BLOCK;
     }
 }
 
-void Bludiste::zapisCestu(int x, int y)
+void Maze::zapisCestu(int x, int y)
 {
     if (this->zapisovatCestu == true)
     {
@@ -163,7 +163,7 @@ void Bludiste::zapisCestu(int x, int y)
     }
 }
 
-void Bludiste::uvolniCestu()
+void Maze::uvolniCestu()
 {
     if (this->zapisovatCestu == true)
     {
@@ -171,15 +171,15 @@ void Bludiste::uvolniCestu()
     }
 }
 
-void Bludiste::zapisFinalniCestu()
+void Maze::zapisFinalniCestu()
 {
     for (unsigned int i = 0; i < this->cesta.size(); i++)
     {
-        this->plocha[this->cesta.at(i)[0]][this->cesta.at(i)[1]] = FINALNI_CESTA;
+        this->plocha[this->cesta.at(i)[0]][this->cesta.at(i)[1]] = FINAL_PATH;
     }
 }
 
-void Bludiste::najdiStart()
+void Maze::najdiStart()
 {
     for (int i = 0; i < this->vyska; i++)
     {
@@ -194,7 +194,7 @@ void Bludiste::najdiStart()
     }
 }
 
-void Bludiste::vypisBludiste()
+void Maze::vypisMaze()
 {
     for (int i = 0; i < this->vyska; i++)
     {
@@ -206,13 +206,13 @@ void Bludiste::vypisBludiste()
     }
 }
 
-void Bludiste::najdiCil()
+void Maze::najdiCil()
 {
     for (int i = 0; i < this->vyska; i++)
     {
         for (int j = 0; j < this->sirka; j++)
         {
-            if (plocha[i][j] == CIL)
+            if (plocha[i][j] == FINISH)
             {
                 this->cil[0] = i;
                 this->cil[1] = j;
@@ -221,21 +221,21 @@ void Bludiste::najdiCil()
     }
 }
 
-void Bludiste::vycistiPlochu()
+void Maze::vycistiPlochu()
 {
     for (int i = 0; i < this->vyska; i++)
     {
         for (int j = 0; j < this->sirka; j++)
         {
-            if (plocha[i][j] != CIL && plocha[i][j] != START && plocha[i][j] != ZED)
+            if (plocha[i][j] != FINISH && plocha[i][j] != START && plocha[i][j] != WALL)
             {
-                plocha[i][j] = CESTA;
+                plocha[i][j] = PATH;
             }
         }
     }
 }
 
-int** Bludiste::twoDimArr(int x, int y)
+int** Maze::twoDimArr(int x, int y)
 {
     int** vysledek;
     vysledek = new int * [x];
@@ -248,20 +248,20 @@ int** Bludiste::twoDimArr(int x, int y)
     return vysledek;
 }
 
-void Bludiste::nactiMapu()
+void Maze::nactiMapu()
 {
-    string radek;
+    string line;
     ifstream mapaSoubor(this->cteciSoubor);
-    mapaSoubor >> radek;
-    mapaSoubor >> radek;
+    mapaSoubor >> line;
+    mapaSoubor >> line;
 
     int i = 0;
-    while (mapaSoubor >> radek)
+    while (mapaSoubor >> line)
     {
-        if (radek.length() == this->sirka)
+        if (line.length() == this->sirka)
         {
             int j = 0;
-            for (const auto &c : radek)
+            for (const auto &c : line)
             {
                 this->plocha[i][j] = c - '0';
                 j++;
@@ -273,7 +273,7 @@ void Bludiste::nactiMapu()
     mapaSoubor.close();
 }
 
-void Bludiste::vysledekDoSouboru()
+void Maze::vysledekDoSouboru()
 {
     if (this->cesta.size() == 0)
     {

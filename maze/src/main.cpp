@@ -1,16 +1,16 @@
-#include "Knihovny.h"
-#include "Bludiste.h"
+#include "libs.h"
+#include "Maze.h"
 
 using namespace std;
 
 int main()
 {
-	Bludiste bludiste("mapa.txt");
+	Maze maze("mapa.txt");
 
-	bludiste.nactiMapu();
-	bludiste.najdiCestu();
-	bludiste.vykresli();
-	bludiste.vysledekDoSouboru();
+	maze.nactiMapu();
+	maze.najdiCestu();
+	maze.vykresli();
+	maze.vysledekDoSouboru();
 
 	return 0;
 }
