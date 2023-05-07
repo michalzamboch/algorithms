@@ -1,5 +1,3 @@
-
-#define _CRT_SECURE_NO_WARNINGS
 #pragma once
 
 #include <iostream>
@@ -13,10 +11,6 @@
 
 using namespace std;
 
-/*
-Tøída pro grafy
-Uchovává graf, promìnné
-*/
 class Graph
 {
 private:
@@ -30,7 +24,7 @@ private:
 	bool isBipartite();
 
 public:
-	Graph(string fileName);
+	Graph(std::string fileName);
 	~Graph();
 
 	void load();
