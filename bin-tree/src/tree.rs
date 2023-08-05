@@ -6,7 +6,6 @@ pub struct BinaryTree<T> {
     pub right: Option<Box<BinaryTree<T>>>,
 }
 
-// creating a root node
 impl<T> BinaryTree<T> {
     pub fn new(value: T) -> Self {
         BinaryTree {
@@ -16,13 +15,11 @@ impl<T> BinaryTree<T> {
         }
     }
 
-    // inserted value into left node of tree
     pub fn left(mut self, node: BinaryTree<T>) -> Self {
         self.left = Some(Box::new(node));
         self
     }
 
-    // inserted value into right node of tree
     pub fn right(mut self, node: BinaryTree<T>) -> Self {
         self.right = Some(Box::new(node));
         self
