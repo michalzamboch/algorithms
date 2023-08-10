@@ -1,7 +1,6 @@
-use trie_node::{TrieNode, ITrieNode};
+use trie::{TrieNode};
 
 mod trie;
-mod trie_node;
 
 fn main() {
     
